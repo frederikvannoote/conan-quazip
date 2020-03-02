@@ -1,4 +1,4 @@
 sources:
-  "1.0.0":
-    url: "https://github.com/libauthor/libname"
-    sha256: "98f6f57aab0a424469619ed3047728f0d3901ce8f0dea919c11e7966d807e870"
+  "0.8.1":
+    url: "https://github.com/stachenov/quazip/archive/v0.8.1.tar.gz"
+    sha256: "4fda4d4248e08015b5090d0369ef9e68bdc4475aa12494f7c0f6d79e43270d14"

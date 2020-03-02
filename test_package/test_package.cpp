@@ -1,7 +1,6 @@
-#include <iostream>
+#include <quazip/quazip.h>
 
 int main()
 {
-    std::cout << "Bincrafters\n";
-    return 0;
+    QuaZip zip;
 }

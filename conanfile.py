@@ -2,14 +2,13 @@ from conans import ConanFile, CMake, tools
 import os
 
 
-class LibnameConan(ConanFile):
-    name = "libname"
-    description = "Keep it short"
-    topics = ("conan", "libname", "logging")
-    url = "https://github.com/bincrafters/conan-libname"
-    homepage = "https://github.com/original_author/original_lib"
-    license = "MIT"  # Indicates license type of the packaged library; please use SPDX Identifiers https://spdx.org/licenses/
-    # Remove following lines if the target lib does not use CMake
+class QuazipConan(ConanFile):
+    name = "quazip"
+    description = "Qt/C++ wrapper over minizip"
+    topics = ("conan", "quazip")
+    url = "https://github.com/bincrafters/conan-quazip"
+    homepage = "https://github.com/stachenov/quazip"
+    license = " LGPL-2.1-only"
     exports_sources = ["CMakeLists.txt"]
     generators = "cmake"
 
@@ -22,6 +21,7 @@ class LibnameConan(ConanFile):
     _build_subfolder = "build_subfolder"
 
     requires = (
+        "qt/5.12.7@bincrafters/stable",
         "zlib/1.2.11"
     )
 
@@ -36,27 +36,36 @@ class LibnameConan(ConanFile):
 
     def _configure_cmake(self):
         cmake = CMake(self)
-        cmake.definitions["BUILD_TESTS"] = False  # example
+        if tools.os_info.is_windows:
+            cmake.definitions["ZLIB_INCLUDE_DIRS"] = ";".join(self.deps_cpp_info["zlib"].include_paths)
+            cmake.definitions["ZLIB_LIBRARIES"] = ";".join(self.deps_cpp_info["zlib"].lib_paths)
+        else:
+            cmake.definitions["ZLIB_ROOT"] = self.deps_cpp_info["zlib"].rootpath
+        if self.settings.compiler != 'Visual Studio':
+            cmake.definitions['CMAKE_POSITION_INDEPENDENT_CODE'] = self.options.fPIC
         cmake.configure(build_folder=self._build_subfolder)
         return cmake
 
     def build(self):
         cmake = self._configure_cmake()
-        cmake.build()
+        if self.options.shared:
+            cmake.build(target="quazip5")
+        else:
+            cmake.build(target="quazip_static")
 
     def package(self):
-        self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
-        cmake = self._configure_cmake()
-        cmake.install()
-        # If the CMakeLists.txt has a proper install method, the steps below may be redundant
-        # If so, you can just remove the lines below
-        include_folder = os.path.join(self._source_subfolder, "include")
-        self.copy(pattern="*", dst="include", src=include_folder)
-        self.copy(pattern="*.dll", dst="bin", keep_path=False)
-        self.copy(pattern="*.lib", dst="lib", keep_path=False)
-        self.copy(pattern="*.a", dst="lib", keep_path=False)
-        self.copy(pattern="*.so*", dst="lib", keep_path=False)
-        self.copy(pattern="*.dylib", dst="lib", keep_path=False)
+        self.copy(pattern="*.h", dst="include/quazip", src=os.path.join(self._source_subfolder, "quazip"))
+        if self.options.shared:
+            self.copy(pattern="*.so", dst="lib", keep_path=False)
+            self.copy(pattern="*.dylib", dst="lib", keep_path=False)
+            self.copy(pattern="*.dll", dst="bin", keep_path=False)
+        else:
+            self.copy(pattern="*.lib", dst="lib", keep_path=False)
+            self.copy(pattern="*.a", dst="lib", keep_path=False)
+        self.copy(pattern="COPYING", dst='licenses', src=self._source_subfolder, ignore_case=True, keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
+        lib_name = "quazip_static" if tools.os_info.is_windows and not self.options.shared else "quazip5"
+        lib_name += "d" if self.settings.build_type == "Debug" else ""
+        self.cpp_info.libs = [lib_name]
+        self.cpp_info.defines = ["QUAZIP_STATIC"] if not self.options.shared else []
