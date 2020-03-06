@@ -40,8 +40,7 @@ class QuazipConan(ConanFile):
             cmake.definitions["ZLIB_LIBRARIES"] = ";".join(self.deps_cpp_info["zlib"].lib_paths)
         else:
             cmake.definitions["ZLIB_ROOT"] = self.deps_cpp_info["zlib"].rootpath
-        if self.settings.compiler != 'Visual Studio':
-            cmake.definitions['CMAKE_POSITION_INDEPENDENT_CODE'] = self.options.fPIC
+
         cmake.configure(build_folder=self._build_subfolder)
         return cmake
 
