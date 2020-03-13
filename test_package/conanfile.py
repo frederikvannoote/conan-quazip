@@ -6,9 +6,6 @@ class TestPackageConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
 
-    def configure(self):
-        self.options["qt"].add("with_fontconfig=False")
-
     def build(self):
         cmake = CMake(self)
         cmake.configure()
