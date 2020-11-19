@@ -1,4 +1,4 @@
-#include <quazip5/quazip.h>
+#include <quazip.h>
 
 int main()
 {
