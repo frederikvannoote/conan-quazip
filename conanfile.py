@@ -13,8 +13,8 @@ class QuazipConan(ConanFile):
     generators = "cmake"
 
     settings = "os", "arch", "compiler", "build_type"
-    options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": False, "fPIC": True}
+    options = {"shared": [True, False]}
+    default_options = {"shared": False}
 
     _source_subfolder = "source_subfolder"
     _build_subfolder = "build_subfolder"
@@ -23,10 +23,6 @@ class QuazipConan(ConanFile):
         "qt/5.15.1@bincrafters/stable",
         "zlib/1.2.11"
     )
-
-    def config_options(self):
-        if self.settings.os == 'Windows':
-            del self.options.fPIC
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
