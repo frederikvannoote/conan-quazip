@@ -35,16 +35,6 @@ class QuazipConan(ConanFile):
         cmake.configure(source_folder=".")
         cmake.build()
         cmake.install()
-    def package(self):
-        self.copy(pattern="*.h", dst="include/quazip5", src=os.path.join(self._source_subfolder, "quazip"))
-        if self.options.shared:
-            self.copy(pattern="*.so*", dst="lib", keep_path=False)
-            self.copy(pattern="*.dylib", dst="lib", keep_path=False)
-            self.copy(pattern="*.dll", dst="bin", keep_path=False)
-        else:
-            self.copy(pattern="*.a", dst="lib", keep_path=False)
-        self.copy(pattern="*.lib", dst="lib", keep_path=False)
-        self.copy(pattern="COPYING", dst='licenses', src=self._source_subfolder, ignore_case=True, keep_path=False)
 
     def package_info(self):
         lib_name = "quazip_static" if tools.os_info.is_windows and not self.options.shared else "quazip5"
