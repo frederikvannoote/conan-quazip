@@ -29,24 +29,12 @@ class QuazipConan(ConanFile):
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, self._source_subfolder)
 
-    def _configure_cmake(self):
-        cmake = CMake(self)
-        if tools.os_info.is_windows:
-            cmake.definitions["ZLIB_INCLUDE_DIRS"] = ";".join(self.deps_cpp_info["zlib"].include_paths)
-            cmake.definitions["ZLIB_LIBRARIES"] = ";".join(self.deps_cpp_info["zlib"].lib_paths)
-        else:
-            cmake.definitions["ZLIB_ROOT"] = self.deps_cpp_info["zlib"].rootpath
-
-        cmake.configure(build_folder=self._build_subfolder)
-        return cmake
-
     def build(self):
-        cmake = self._configure_cmake()
-        if self.options.shared:
-            cmake.build(target="quazip5")
-        else:
-            cmake.build(target="quazip_static")
-
+        cmake = CMake(self)
+        cmake.definitions["BUILD_SHARED_LIBS"] = self.options.shared
+        cmake.configure(source_folder=".")
+        cmake.build()
+        cmake.install()
     def package(self):
         self.copy(pattern="*.h", dst="include/quazip5", src=os.path.join(self._source_subfolder, "quazip"))
         if self.options.shared:
