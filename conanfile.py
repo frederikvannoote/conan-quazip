@@ -20,7 +20,7 @@ class QuazipConan(ConanFile):
     _build_subfolder = "build_subfolder"
 
     requires = (
-        "qt/5.12.6@bincrafters/stable",
+        "qt/5.11.3@bincrafters/stable",
         "zlib/1.2.11"
     )
 
