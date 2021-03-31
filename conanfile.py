@@ -19,7 +19,7 @@ class QuazipConan(ConanFile):
     _source_subfolder = "source_subfolder"
     _build_subfolder = "build_subfolder"
 
-    build_requires = (
+    requires = (
         "zlib/1.2.11"
     )
 
